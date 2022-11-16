@@ -1,0 +1,42 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Modify logical drive
+  gather_facts: False
+
+  vars:
+    - storage_id: "0"
+    - logical_id: "0"
+    - write_policy: "Write Through"
+    - read_policy: "Read Ahead"
+
+
+  tasks:
+    - name: Create session
+      hdm_redfish_command:
+        category: Sessions
+        command: CreateSession
+        baseuri: "{{ baseuri }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        timeout: 30
+      register: result
+    
+    - name: Modify Logical Drive
+      hdm_redfish_command:
+        category: Systems
+        command: ModifyLogicalDrive
+        baseuri: "{{ baseuri }}"
+        storage_id: "{{ storage_id }}"
+        logical_id: "{{ logical_id }}"
+        write_policy: "{{ write_policy }}"
+        read_policy: "{{ read_policy }}"
+        auth_token: "{{ result.session.token }}"
+
+    - name: Delete session
+      hdm_redfish_command:
+        category: Sessions
+        command: DeleteSession
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+        session_uri: "{{ result.session.uri }}"

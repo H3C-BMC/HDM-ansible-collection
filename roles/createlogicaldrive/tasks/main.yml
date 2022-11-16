@@ -1,0 +1,11 @@
+---
+# tasks file for createlogicaldrive
+- name: Create Logical Drive
+  hdm_redfish_command:
+    category: Systems
+    command: CreateLogicalDrive
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    storage_id: "{{ storage_id }}"
+    raid_details: "{{ raid }}"

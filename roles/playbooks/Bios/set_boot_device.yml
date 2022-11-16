@@ -1,0 +1,35 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Set boot device to {{ bootdevice }}
+  gather_facts: False
+
+  vars:
+    - bootdevice: Hdd
+
+  tasks:
+    - name: Create session
+      hdm_redfish_command:
+        category: Sessions
+        command: CreateSession
+        baseuri: "{{ baseuri }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+      register: result
+
+    - name: Set one-time boot device to {{ bootdevice }}
+      hdm_redfish_command:
+        category: Systems
+        command: SetBootDevice
+        bootdevice: "{{ bootdevice }}"
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+      register: bios_onetimeboot
+
+    - name: Delete session
+      hdm_redfish_command:
+        category: Sessions
+        command: DeleteSession
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+        session_uri: "{{ result.session.uri }}"

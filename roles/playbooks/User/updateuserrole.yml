@@ -1,0 +1,36 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Update user role
+  gather_facts: False
+
+  vars:
+    - loginname: test3
+    - roleid: Operator 
+
+  tasks:
+    - name: Create session
+      hdm_redfish_command:
+        category: Sessions
+        command: CreateSession
+        baseuri: "{{ baseuri }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+      register: result
+
+    - name: Update user role
+      hdm_redfish_command:
+        category: Accounts
+        command: UpdateUserRole
+        baseuri: "{{ baseuri }}"
+        account_username: "{{ loginname }}"
+        roleid: "{{ roleid }}"
+        auth_token: "{{ result.session.token }}"
+
+    - name: Delete session
+      hdm_redfish_command:
+        category: Sessions
+        command: DeleteSession
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+        session_uri: "{{ result.session.uri }}"

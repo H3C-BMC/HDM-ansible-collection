@@ -1,0 +1,39 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Add User
+  gather_facts: False
+
+  vars:
+    - new_user: test33
+    - new_pass: Password@_
+    - role_id: Administrator
+
+  tasks:
+    - name: Create session
+      hdm_redfish_command:
+        category: Sessions
+        command: CreateSession
+        baseuri: "{{ baseuri }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+      register: result
+
+    - name: Add user
+      hdm_redfish_command:
+        category: Accounts
+        command: AddUser
+        baseuri: "{{ baseuri }}"
+        new_username: "{{ new_user }}"
+        new_password: "{{ new_pass }}"
+        roleid: "{{ role_id }}"
+        auth_token: "{{ result.session.token }}"
+        timeout: 60
+        
+    - name: Delete session
+      hdm_redfish_command:
+        category: Sessions
+        command: DeleteSession
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+        session_uri: "{{ result.session.uri }}"

@@ -1,0 +1,14 @@
+---
+# tasks file for setipv4static
+- name: Set IPv4 Static 
+  hdm_redfish_command:
+    category: Manager
+    command: SetIPv4Static
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    new_address_origin: Static 
+    network_interface_id: "{{ net_id }}"
+    new_address: "{{ new_addr }}"
+    new_subnetmask: "{{ new_sub }}"
+    new_gateway: "{{ new_gateway }}"

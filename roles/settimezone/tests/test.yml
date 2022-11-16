@@ -1,0 +1,8 @@
+---
+- hosts: hdmhosts
+  connection: local
+  gather_facts: False
+  vars:
+    - attribute_value: UTC+8
+  roles:
+    - settimezone

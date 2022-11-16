@@ -1,0 +1,14 @@
+---
+# tasks file for setipv6static
+- name: Set IPv6 Static
+  hdm_redfish_command:
+    category: Manager
+    command: SetIPv6Static
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    new_address_origin: Static 
+    network_interface_id: "{{ net_id }}"
+    new_address: "{{ new_addr }}"
+    new_gateway: "{{ new_gateway }}"
+    new_prefix_length: "{{ prefix_length }}"

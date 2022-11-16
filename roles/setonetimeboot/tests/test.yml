@@ -1,0 +1,8 @@
+---
+- hosts: hdmhosts
+  connection: local
+  gather_facts: False
+  vars:
+    - bootdevice: Pxe
+  roles:
+    - setonetimeboot

@@ -1,0 +1,36 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Update user password
+  gather_facts: False
+
+  vars:
+  - account_username: test33 
+  - account_updatename: test3
+
+  tasks:
+    - name: Create session
+      hdm_redfish_command:
+        category: Sessions
+        command: CreateSession
+        baseuri: "{{ baseuri }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+      register: result
+
+    - name: Update user name
+      hdm_redfish_command:
+        category: Accounts
+        command: UpdateUserName
+        baseuri: "{{ baseuri }}"
+        account_username: "{{ account_username }}"
+        account_updatename: "{{ account_updatename }}"
+        auth_token: "{{ result.session.token }}"
+
+    - name: Delete session
+      hdm_redfish_command:
+        category: Sessions
+        command: DeleteSession
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+        session_uri: "{{ result.session.uri }}"

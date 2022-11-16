@@ -1,0 +1,35 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Set TimeZone
+  gather_facts: False
+
+  vars:
+    - attribute_value: UTC+10
+
+  tasks:
+  - name: Create session
+    hdm_redfish_command:
+      category: Sessions
+      command: CreateSession
+      baseuri: "{{ baseuri }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+    register: result
+
+  - name: Set TimeZone to {{ attribute_value }}
+    hdm_redfish_command:
+      category: Manager
+      command: SetTimeZone
+      baseuri: "{{ baseuri }}"
+      attribute_name: TimeZone
+      attribute_value: "{{ attribute_value }}"
+      auth_token: "{{ result.session.token }}"
+
+  - name: Delete session
+    hdm_redfish_command:
+      category: Sessions
+      command: DeleteSession
+      baseuri: "{{ baseuri }}"
+      auth_token: "{{ result.session.token }}"
+      session_uri: "{{ result.session.uri }}"

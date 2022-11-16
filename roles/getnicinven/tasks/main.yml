@@ -1,0 +1,10 @@
+---
+# tasks file for getnicinven
+- name: Get NIC Information
+  hdm_redfish_info:
+    category: Chassis
+    command: GetNicInventory
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+  register: result_attr

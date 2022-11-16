@@ -1,0 +1,11 @@
+---
+# tasks file for deletelogicaldrive
+- name: Delete Logical Drive
+  hdm_redfish_command:
+    category: Systems
+    command: DeleteLogicalDrive
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    storage_id: "{{ storage_id }}"
+    logical_id: "{{ logical_id }}"

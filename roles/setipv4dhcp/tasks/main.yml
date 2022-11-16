@@ -1,0 +1,11 @@
+---
+# tasks file for setipv4dhcp
+- name: Set IPv4 DHCP
+  hdm_redfish_command:
+    category: Manager
+    command: SetIPv4DHCP
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    new_address_origin: DHCP
+    network_interface_id: "{{ net_id }}"

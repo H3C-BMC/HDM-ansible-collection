@@ -1,0 +1,35 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Set boot mode to Legacy BIOS
+  gather_facts: False
+
+  vars:
+    - bios_attr: {"BootMode": "LEGACY"}  # The dictionary is of the format {"attribute_name" : "attribute_value"}
+
+  tasks:
+    - name: Create session
+      hdm_redfish_command:
+        category: Sessions
+        command: CreateSession
+        baseuri: "{{ baseuri }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+      register: result
+
+    - name: Set {{ bios_attr }}
+      hdm_redfish_command:
+        category: Systems
+        command: SetBiosAttributes
+        bios_attributes: "{{ bios_attr }}"
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+      register: bios_attribute
+
+    - name: Delete session
+      hdm_redfish_command:
+        category: Sessions
+        command: DeleteSession
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+        session_uri: "{{ result.session.uri }}"

@@ -1,0 +1,13 @@
+---
+# tasks file for modifylogicaldrive
+- name: Modify Logical Drive
+  hdm_redfish_command:
+    category: Systems
+    command: ModifyLogicalDrive
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    storage_id: "{{ storage_id }}"
+    logical_id: "{{ logical_id }}"
+    write_policy: "{{ write_policy }}"
+    read_policy: "{{ read_policy }}"

@@ -1,0 +1,9 @@
+---
+- hosts: hdmhosts
+  connection: local
+  gather_facts: False
+  vars:
+    - loginname: test
+    - timeout: 30 
+  roles:
+    - deluser

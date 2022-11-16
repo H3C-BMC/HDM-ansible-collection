@@ -1,0 +1,11 @@
+---
+# tasks file for setipv6dhcp
+- name: Set IPv6 DHCP
+  hdm_redfish_command:
+    category: Manager
+    command: SetIPv6DHCP
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    new_address_origin: DHCPv6 
+    network_interface_id: "{{ net_id }}"

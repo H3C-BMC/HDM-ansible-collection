@@ -1,0 +1,57 @@
+---
+- hosts: hdmhosts
+  connection: local
+  name: Create logical drive
+  gather_facts: False
+
+  vars:
+    - storage_id: 0
+    - raid: {
+        "Name": "test",
+        "InitState": "No",
+        "StripSize": "64KB",
+        "Level": "RAID 0",
+        "SpanNum": 1,
+        "NumDrives": 1,
+        "ReadPolicy": "Read Ahead",
+        "WritePolicy": "Write Through",
+        "IOPolicy": "Direct",
+        "DriveCache": "Disable",
+        "AccessPolicy": "Blocked",
+        "Size": 199,
+        "SizeUnit": "GB",
+        "PhysicalDiskList":[
+            {
+                "group_id": 0,
+                "id": 10         # physical disk connection id
+            }
+        ]
+    }
+
+  tasks:
+    - name: Create session
+      hdm_redfish_command:
+        category: Sessions
+        command: CreateSession
+        baseuri: "{{ baseuri }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        timeout: 30
+      register: result
+
+    - name: Create Logical Drive
+      hdm_redfish_command:
+        category: Systems
+        command: CreateLogicalDrive
+        baseuri: "{{ baseuri }}"
+        storage_id: "{{ storage_id }}"
+        raid_details: "{{ raid }}"
+        auth_token: "{{ result.session.token }}"
+
+    - name: Delete session
+      hdm_redfish_command:
+        category: Sessions
+        command: DeleteSession
+        baseuri: "{{ baseuri }}"
+        auth_token: "{{ result.session.token }}"
+        session_uri: "{{ result.session.uri }}"
