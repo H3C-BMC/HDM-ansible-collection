@@ -1,21 +1,17 @@
-adduser
+Role Name
 =========
-add hdm accout
+Set ntp server
 
 Example Playbook
 ----------------
-
 - hosts: hdmhosts
   connection: local
   gather_facts: False
   vars:
-	- new_pass: Password@_ 
-	- new_user: test12  
-	- role_id: Operator
-	- timeout: 30
-
+    - attribute_name: TertiaryNtpServer 
+    - attribute_value: 192.168.11.22
   roles:
-	- adduser
+    - setntpservers
 
 License
 -------

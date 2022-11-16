@@ -1,21 +1,17 @@
-adduser
+Role Name
 =========
-add hdm accout
+Update user name
 
 Example Playbook
 ----------------
-
 - hosts: hdmhosts
   connection: local
   gather_facts: False
   vars:
-	- new_pass: Password@_ 
-	- new_user: test12  
-	- role_id: Operator
-	- timeout: 30
-
+    - account_username: test12
+    - account_updatename: test_mod
   roles:
-	- adduser
+    - updateusername
 
 License
 -------

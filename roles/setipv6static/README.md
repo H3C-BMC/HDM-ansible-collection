@@ -1,21 +1,20 @@
-adduser
+Role Name
 =========
-add hdm accout
+Set ipv6 static
 
 Example Playbook
 ----------------
-
 - hosts: hdmhosts
   connection: local
   gather_facts: False
   vars:
-	- new_pass: Password@_ 
-	- new_user: test12  
-	- role_id: Operator
-	- timeout: 30
+    - net_id: eth1 
+    - new_addr: 2022::22  
+    - new_gateway: 2022::1
+    - prefix_length: 64
 
   roles:
-	- adduser
+    - setipv6static
 
 License
 -------

@@ -1,21 +1,20 @@
-adduser
+Role Name
 =========
-add hdm accout
+Set ipv4 static
 
 Example Playbook
 ----------------
-
 - hosts: hdmhosts
   connection: local
   gather_facts: False
   vars:
-	- new_pass: Password@_ 
-	- new_user: test12  
-	- role_id: Operator
-	- timeout: 30
+    - net_id: eth1 
+    - new_addr: 172.16.3.49  
+    - new_sub: 255.255.255.0
+    - new_gateway: 0.0.0.0
 
   roles:
-	- adduser
+    - setipv4static
 
 License
 -------

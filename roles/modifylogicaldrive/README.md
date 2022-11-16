@@ -1,21 +1,20 @@
-adduser
+Role Name
 =========
-add hdm accout
+Modify logical drive
 
 Example Playbook
 ----------------
-
 - hosts: hdmhosts
   connection: local
   gather_facts: False
   vars:
-	- new_pass: Password@_ 
-	- new_user: test12  
-	- role_id: Operator
-	- timeout: 30
+    - storage_id: "0"
+    - logical_id: "0"
+    - write_policy: "Write Through"
+    - read_policy: "Read Ahead"
 
   roles:
-	- adduser
+    - modifylogicaldrive
 
 License
 -------

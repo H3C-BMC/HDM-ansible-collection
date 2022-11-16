@@ -1,6 +1,6 @@
-adduser
+updateuserpass
 =========
-add hdm accout
+Update hdm user password
 
 Example Playbook
 ----------------
@@ -9,13 +9,10 @@ Example Playbook
   connection: local
   gather_facts: False
   vars:
-	- new_pass: Password@_ 
-	- new_user: test12  
-	- role_id: Operator
-	- timeout: 30
-
+   - account_username: test_mod
+   - new_pass: Password@_
   roles:
-	- adduser
+    - updateuserpass
 
 License
 -------
