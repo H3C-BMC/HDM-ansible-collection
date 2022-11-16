@@ -11,13 +11,6 @@ This repository can be integrated into complex playbooks for you own needs and t
 *	ansible >= 2.9
 *	python 3 up to version 3.10
 
-# Use the command tool
-To use the command tool:
-*  Local operating system configuration python 3 environment.
-  *Copy the tool project file to the operating system. 
-  *Enter the corresponding command and then press Enter to execute the command.
-
-   `python main.py -H host -p port -U username -P password <command>`
 
 
 Copyright and License
