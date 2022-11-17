@@ -16,7 +16,7 @@ result:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.h3c.hdm.plugins.module_utils.hdm_redfish_utils import HDMRedfishUtils
+from ansible_collections.h3c_bmc.hdm.plugins.module_utils.hdm_redfish_utils import HDMRedfishUtils
 
 CATEGORY_COMMANDS_ALL = {
     "Systems": ["GetSystemInventory", "GetPsuInventory", "GetCpuInventory",

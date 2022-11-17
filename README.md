@@ -9,7 +9,7 @@ This repository can be integrated into complex playbooks for you own needs and t
 # Prerequisites
 *	HDM-3.16 or later. Some commands might require specific HDM versions using redfish api. For more information, see the HDM redfish documents.
 *	ansible >= 2.9
-*	python 3 up to version 3.10
+*	python 2 and 3 up to version 3.10
 
 
 
