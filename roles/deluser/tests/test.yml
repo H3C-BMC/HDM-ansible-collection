@@ -3,7 +3,6 @@
   connection: local
   gather_facts: False
   vars:
-    - loginname: test
-    - timeout: 30 
+    - account_id: 3
   roles:
     - deluser

@@ -3,6 +3,6 @@
   connection: local
   gather_facts: False
   vars:
-    - bootdevice: Pxe
+    - boot_target: Pxe
   roles:
     - setonetimeboot

@@ -1,5 +1,5 @@
 ---
-# tasks file for adduser
+# tasks file for delete user
 - name: delete user
   hdm_redfish_command:
     category: Accounts
@@ -7,6 +7,5 @@
     baseuri: "{{ baseuri }}"
     username: "{{ username }}"
     password: "{{ password }}"
-    # account_id: "{{ account_id }}"
-    account_username: "{{ loginname }}"
-    timeout: "{{ timeout }}"
+    account_id: "{{ account_id }}"
+    # account_username: "{{ loginname }}"

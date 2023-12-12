@@ -5,8 +5,8 @@
   gather_facts: False
 
   vars:
-    - storage_id: "0"
-    - logical_id: "0"
+    - storage_id: RAIDStorage0
+    - logical_id: LogicalDrive0
 
   tasks:
     - name: Create session
@@ -24,11 +24,13 @@
         category: Systems
         command: DeleteLogicalDrive
         baseuri: "{{ baseuri }}"
+        #username: "{{ username }}"
+        #password: "{{ password }}"
         storage_id: "{{ storage_id }}"
         logical_id: "{{ logical_id }}"
         auth_token: "{{ result.session.token }}"
 
-    - name: Delete session
+    - name: Delete session using security token created by CreateSesssion above
       hdm_redfish_command:
         category: Sessions
         command: DeleteSession

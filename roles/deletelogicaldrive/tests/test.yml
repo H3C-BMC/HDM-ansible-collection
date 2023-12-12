@@ -3,8 +3,8 @@
   connection: local
   gather_facts: False
   vars:
-    - storage_id: "0"
-    - logical_id: "2"
+    - storage_id: RAIDStorage0
+    - logical_id: LogicalDrive0
 
   roles:
     - deletelogicaldrive

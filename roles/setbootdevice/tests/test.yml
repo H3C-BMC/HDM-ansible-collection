@@ -3,6 +3,8 @@
   connection: local
   gather_facts: False
   vars:
-    - bootdevice: Hdd
+    - boot_target: BiosSetup
+    - boot_enable: Once
+    - boot_mode: UEFI
   roles:
     - setbootdevice

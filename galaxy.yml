@@ -9,7 +9,7 @@ namespace: h3c_bmc
 name: hdm
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.0.1
+version: 1.0.2
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
@@ -34,9 +34,10 @@ license_file: LICENSE
 tags:
  - ansible
  - devops
- - h3c_hdm
- - infrastructure_as_code
- - bare_metal
+ - bmc
+ - hdm
+ - hdm2
+ - server
  - linux
  - infrastructure
 

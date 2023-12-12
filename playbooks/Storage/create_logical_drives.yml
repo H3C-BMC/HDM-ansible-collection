@@ -5,7 +5,7 @@
   gather_facts: False
 
   vars:
-    - storage_id: 0
+    - storage_id: RAIDStorage0
     - raid: {
         "Name": "test",
         "InitState": "No",
@@ -17,13 +17,13 @@
         "WritePolicy": "Write Through",
         "IOPolicy": "Direct",
         "DriveCache": "Disable",
-        "AccessPolicy": "Blocked",
-        "Size": 199,
+        "AccessPolicy": "Read/Write",
+        "Size": 0,
         "SizeUnit": "GB",
         "PhysicalDiskList":[
             {
                 "group_id": 0,
-                "id": 10         # physical disk connection id
+                "id": "DiskFront4"         # physical disk id
             }
         ]
     }
@@ -44,11 +44,13 @@
         category: Systems
         command: CreateLogicalDrive
         baseuri: "{{ baseuri }}"
+        #username: "{{ username }}"
+        #password: "{{ password }}"
         storage_id: "{{ storage_id }}"
         raid_details: "{{ raid }}"
         auth_token: "{{ result.session.token }}"
 
-    - name: Delete session
+    - name: Delete session using security token created by CreateSesssion above
       hdm_redfish_command:
         category: Sessions
         command: DeleteSession

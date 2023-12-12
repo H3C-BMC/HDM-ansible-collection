@@ -1,6 +1,6 @@
 ---
 # tasks file for powerreboot  
-- name: Restart system power gracefully
+- name: Restart system power
   hdm_redfish_command:
     category: Systems
     command: PowerReboot

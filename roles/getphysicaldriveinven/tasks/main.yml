@@ -1,0 +1,10 @@
+---
+# tasks file for get physical drive details
+- name: Get Physical Drive Inventory
+  hdm_redfish_info:
+    category: Chassis
+    command: GetPhysicalDriveInventory
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+  register: result_attr

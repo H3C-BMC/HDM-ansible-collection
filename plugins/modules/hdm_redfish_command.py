@@ -7,7 +7,8 @@
 
 from __future__ import absolute_import, division, print_function
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.h3c_bmc.hdm.plugins.module_utils.hdm_redfish_utils import HDMRedfishUtils
+from ansible_collections.h3c_bmc.hdm.plugins.module_utils.hdm_redfish_utils \
+    import HDMRedfishUtils
 from ansible.module_utils.basic import AnsibleModule
 __metaclass__ = type
 
@@ -27,15 +28,13 @@ CATEGORY_COMMANDS_ALL = {
                 "PowerOn", "PowerForceOff", "PowerForceRestart",
                 "PowerGracefulRestart",
                 "PowerGracefulShutdown", "PowerReboot", "CreateLogicalDrive",
-                "DeleteLogicalDrive", "ModifyLogicalDrive",
-                "GetBiosAttributes"],
+                "DeleteLogicalDrive", "ModifyLogicalDrive"],
     "Chassis": ["IndicatorLedOn"],
     "Accounts": ["AddUser", "DeleteUser",
                  "UpdateUserRole", "UpdateUserPassword", "UpdateUserName"],
     "Sessions": ["ClearSessions", "CreateSession", "DeleteSession"],
     "Manager": ["SetNTPServers", "SetTimeZone", "SetIPv4Static", "SetIPv4DHCP",
-                "SetIPv6Static", "SetIPv6DHCP"],
-    "Update": ["SimpleUpdate"],
+                "SetIPv6Static", "SetIPv6DHCP"]
 }
 
 
@@ -56,10 +55,13 @@ def main():
             roleid=dict(aliases=["account_roleid"]),
             update_username=dict(type='str', aliases=["account_updatename"]),
             timeout=dict(type='int', default=60),
-            bootdevice=dict(),
-            uefi_target=dict(),
-            boot_next=dict(),
-            boot_override_mode=dict(choices=['Legacy', 'UEFI']),
+
+            # Des: Modify parameter name
+            boot_enable=dict(),
+            boot_mode=dict(),
+            boot_target=dict(),
+
+            # Des: Modify parameter name
             resource_id=dict(),
             attribute_name=dict(),
             attribute_value=dict(),
@@ -74,7 +76,14 @@ def main():
             raid_details=dict(type='dict', default={}),
             logical_id=dict(),
             write_policy=dict(),
-            read_policy=dict()
+            read_policy=dict(),
+
+            # Des: G6
+            access_policy=dict(),
+            drive_cache=dict()
+
+            # Des: G6 
+
         ),
         required_together=[
             ('username', 'password'),
@@ -92,16 +101,19 @@ def main():
     command_list = module.params['command']
 
     # admin credentials used for authentication
-    creds = {'user': module.params['username'],
-             'pswd': module.params['password'],
-             'token': module.params['auth_token']}
+    creds = {
+        'user': module.params['username'],
+        'pswd': module.params['password'],
+        'token': module.params['auth_token']}
 
     # user to add/modify/delete
-    user = {'account_id': module.params['id'],
-            'account_username': module.params['new_username'],
-            'account_password': module.params['new_password'],
-            'account_roleid': module.params['roleid'],
-            'account_updatename': module.params['update_username']}
+    user = {
+        'account_id': module.params['id'],
+        'account_username': module.params['new_username'],
+        'account_password': module.params['new_password'],
+        'account_roleid': module.params['roleid'],
+        'account_updatename': module.params['update_username']
+    }
 
     # timeout
     timeout = module.params['timeout']
@@ -113,10 +125,9 @@ def main():
 
     # Boot override options
     boot_opts = {
-        'bootdevice': module.params['bootdevice'],
-        'uefi_target': module.params['uefi_target'],
-        'boot_next': module.params['boot_next'],
-        'boot_override_mode': module.params['boot_override_mode'],
+        'boot_enable': module.params['boot_enable'],
+        'boot_mode': module.params['boot_mode'],
+        'boot_target': module.params['boot_target']
     }
 
     bios_attributes = module.params["bios_attributes"]
@@ -147,6 +158,12 @@ def main():
         "logical_id": module.params['logical_id'],
         "write_policy": module.params['write_policy'],
         "read_policy": module.params['read_policy'],
+
+        # Des: G6
+        "access_policy": module.params['access_policy'],
+        "drive_cache": module.params['drive_cache'],
+
+        # Des: G6
     }
 
     # Build root URI
@@ -201,19 +218,20 @@ def main():
             elif command == "SetBiosAttributes":
                 result = rf_utils.set_bios_attributes(bios_attributes)
             elif command == "SetOneTimeBoot":
-                boot_opts['override_enabled'] = 'Once'
+                boot_opts['boot_enable'] = 'Once'
                 result = rf_utils.set_boot_override(boot_opts)
             elif command == "SetBootDevice":
-                boot_opts['override_enabled'] = 'Continuous'
+
+                # Des: unforced assignment
                 result = rf_utils.set_boot_override(boot_opts)
+
+                # Des: unforced assignment
             elif command == "CreateLogicalDrive":
                 result = rf_utils.create_logical_driver(raid_detail)
             elif command == "DeleteLogicalDrive":
                 result = rf_utils.delete_logical_driver(logical_detail)
             elif command == "ModifyLogicalDrive":
                 result = rf_utils.modify_logical_driver(logical_detail)
-            elif command == "GetBiosAttributes":
-                result["bios_attribute"] = rf_utils.get_multi_bios_attributes()
 
     elif category == "Chassis":
         result = rf_utils._find_chassis_resource()
@@ -228,7 +246,8 @@ def main():
         if num_led_commands > 1:
             result = {
                 'ret': False,
-                'msg': "Only one IndicatorLed command should be sent at a time."}
+                'msg': "Only one IndicatorLed command should be sent at a time."
+            }
         else:
             for command in command_list:
                 if command in led_commands:

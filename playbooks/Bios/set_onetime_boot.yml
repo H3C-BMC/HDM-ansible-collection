@@ -5,7 +5,7 @@
   gather_facts: False
 
   vars:
-    - bootdevice: Pxe
+    - boot_target: Pxe
 
   tasks:
     - name: Create session
@@ -17,16 +17,18 @@
         password: "{{ password }}"
       register: result
 
-    - name: Set one-time boot device to {{ bootdevice }}
+    - name: Set one-time boot device to {{ boot_target }}
       hdm_redfish_command:
         category: Systems
         command: SetOneTimeBoot
-        bootdevice: "{{ bootdevice }}"
+        boot_target: "{{ boot_target }}"
         baseuri: "{{ baseuri }}"
+        # username: "{{ username }}"
+        # password: "{{ password }}"
         auth_token: "{{ result.session.token }}"
       register: bios_onetimeboot
 
-    - name: Delete session
+    - name: Delete session using security token created by CreateSesssion above
       hdm_redfish_command:
         category: Sessions
         command: DeleteSession

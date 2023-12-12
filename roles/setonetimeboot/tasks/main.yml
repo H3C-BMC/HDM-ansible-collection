@@ -1,10 +1,10 @@
 ---
 # tasks file for setonetimeboot
-- name: Set one-time boot device to {{ bootdevice }}
+- name: Set one-time boot device to {{ boot_target }}
   hdm_redfish_command:
     category: Systems
     command: SetOneTimeBoot
-    bootdevice: "{{ bootdevice }}"
+    boot_target: "{{ boot_target }}"
     baseuri: "{{ baseuri }}"
     username: "{{ username }}"
     password: "{{ password }}"

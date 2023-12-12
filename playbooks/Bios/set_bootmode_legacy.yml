@@ -23,10 +23,12 @@
         command: SetBiosAttributes
         bios_attributes: "{{ bios_attr }}"
         baseuri: "{{ baseuri }}"
+        # username: "{{ username }}"
+        # password: "{{ password }}"
         auth_token: "{{ result.session.token }}"
       register: bios_attribute
 
-    - name: Delete session
+    - name: Delete session using security token created by CreateSesssion above
       hdm_redfish_command:
         category: Sessions
         command: DeleteSession

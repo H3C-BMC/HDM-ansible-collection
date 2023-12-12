@@ -5,7 +5,7 @@
   gather_facts: False
   
   vars:
-  - loginname: test33 
+  - loginname: test
   - new_pass: Test@123
 
   tasks:
@@ -23,11 +23,13 @@
         category: Accounts
         command: UpdateUserPassword
         baseuri: "{{ baseuri }}"
+        # username: "{{ username }}"
+        # password: "{{ password }}"
         account_username: "{{ loginname }}"
         account_password: "{{ new_pass }}"
         auth_token: "{{ result.session.token }}"
         
-    - name: Delete session
+    - name: Delete session using security token created by CreateSesssion above
       hdm_redfish_command:
         category: Sessions
         command: DeleteSession

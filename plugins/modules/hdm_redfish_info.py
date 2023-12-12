@@ -12,7 +12,9 @@ __metaclass__ = type
 RETURN = '''
 result:
     description: different results depending on task
+    returned: always
     type: dict
+    sample: List of CPUs on system
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -21,13 +23,15 @@ from ansible_collections.h3c_bmc.hdm.plugins.module_utils.hdm_redfish_utils impo
 CATEGORY_COMMANDS_ALL = {
     "Systems": ["GetSystemInventory", "GetPsuInventory", "GetCpuInventory",
                 "GetMemoryInventory", "GetHealthReport",
-                "GetBiosAttributes", "GetBootOverride"],
-    "Chassis": ["GetFanInventory", "GetPsuInventory", "GetNicInventory"],
+                "GetBiosAttributes", "GetBootOverride",
+                "GetLogicalDriveInventory", "GetRaidStorageInventory"],
+    "Chassis": ["GetFanInventory", "GetPsuInventory", "GetNicInventory",
+                "GetPhysicalDriveInventory"],
     "Accounts": ["ListUsers"],
     "Sessions": ["GetSessions"],
-    "Update": ["GetFirmwareInventory"],
-    "Manager": ["GetManagerNicInventory"]
+    "Update": ["GetFirmwareInventory"]
 }
+
 
 CATEGORY_COMMANDS_DEFAULT = {
     "Systems": "GetSystemInventory",
@@ -64,6 +68,7 @@ def main():
         supports_check_mode=True,
     )
 
+    # admin credentials used for authentication
     creds = {'user': module.params['username'],
              'pswd': module.params['password'],
              'token': module.params['auth_token']}
@@ -71,32 +76,43 @@ def main():
     # timeout
     timeout = module.params['timeout']
 
+    # Build root URI
     root_uri = "https://" + module.params['baseuri']
     rf_utils = HDMRedfishUtils(creds, root_uri, timeout, module)
 
+    # Build Category list
     if "all" in module.params['category']:
         for entry in CATEGORY_COMMANDS_ALL:
             category_list.append(entry)
     else:
+        # one or more categories specified
         category_list = module.params['category']
 
     for category in category_list:
         command_list = []
+        # Build Command list for each Category
         if category in CATEGORY_COMMANDS_ALL:
             if not module.params['command']:
+                # True if we don't specify a command --> use default
                 command_list.append(CATEGORY_COMMANDS_DEFAULT[category])
             elif "all" in module.params['command']:
                 for entry in range(len(CATEGORY_COMMANDS_ALL[category])):
                     command_list.append(CATEGORY_COMMANDS_ALL[category][entry])
+            # one or more commands
             else:
                 command_list = module.params['command']
+                # Verify that all commands are valid
                 for cmd in command_list:
+                    # Fail if even one command given is invalid
                     if cmd not in CATEGORY_COMMANDS_ALL[category]:
                         module.fail_json(msg="Invalid Command: %s" % cmd)
         else:
+            # Fail if even one category given is invalid
             module.fail_json(msg="Invalid Category: %s" % category)
 
+        # Organize by Categories / Commands
         if category == "Systems":
+            # execute only if we find a Systems resource
             resource = rf_utils._find_systems_resource()
             if resource['ret'] is False:
                 module.fail_json(msg=resource['msg'])
@@ -109,9 +125,15 @@ def main():
                 elif command == "GetMemoryInventory":
                     result["memory"] = rf_utils.get_multi_memory_inventory()
                 elif command == "GetBiosAttributes":
-                    result["bios_attribute"] = rf_utils.get_multi_bios_attributes()
+                    result["bios_attribute"] = \
+                        rf_utils.get_multi_bios_attributes()
+                elif command == "GetLogicalDriveInventory":
+                    result["logicals"] = rf_utils.get_logical_drive_inventory()
+                elif command == "GetRaidStorageInventory":
+                    result["raids"] = rf_utils.get_raid_storage_inventory()
 
         elif category == "Chassis":
+            # execute only if we find Chassis resource
             resource = rf_utils._find_chassis_resource()
             if resource['ret'] is False:
                 module.fail_json(msg=resource['msg'])
@@ -128,11 +150,16 @@ def main():
                 elif command == "GetChassisInventory":
                     result["chassis"] = rf_utils.get_chassis_inventory()
                 elif command == "GetHealthReport":
-                    result["health_report"] = rf_utils.get_multi_chassis_health_report()
+                    result["health_report"] = \
+                        rf_utils.get_multi_chassis_health_report()
                 elif command == "GetNicInventory":
                     result["nic"] = rf_utils.get_multi_nic_inventory(category)
+                elif command == "GetPhysicalDriveInventory":
+                    result["physicals"] = \
+                        rf_utils.get_physical_drive_inventory()
 
         elif category == "Accounts":
+            # execute only if we find an Account service resource
             resource = rf_utils._find_accountservice_resource()
             if resource['ret'] is False:
                 module.fail_json(msg=resource['msg'])
@@ -142,6 +169,7 @@ def main():
                     result["user"] = rf_utils.list_users()
 
         elif category == "Update":
+            # execute only if we find UpdateService resources
             resource = rf_utils._find_updateservice_resource()
             if resource['ret'] is False:
                 module.fail_json(msg=resource['msg'])
@@ -151,6 +179,7 @@ def main():
                     result["firmware"] = rf_utils.get_firmware_inventory()
 
         elif category == "Sessions":
+            # execute only if we find SessionService resources
             resource = rf_utils._find_sessionservice_resource()
             if resource['ret'] is False:
                 module.fail_json(msg=resource['msg'])
@@ -158,27 +187,6 @@ def main():
             for command in command_list:
                 if command == "GetSessions":
                     result["session"] = rf_utils.get_sessions()
-
-        elif category == "Manager":
-            resource = rf_utils._find_managers_resource()
-            if resource['ret'] is False:
-                module.fail_json(msg=resource['msg'])
-
-            for command in command_list:
-                if command == "GetManagerNicInventory":
-                    result["manager_nics"] = rf_utils.get_multi_nic_inventory(category)
-                elif command == "GetVirtualMedia":
-                    result["virtual_media"] = rf_utils.get_multi_virtualmedia(category)
-                elif command == "GetLogs":
-                    result["log"] = rf_utils.get_logs()
-                elif command == "GetNetworkProtocols":
-                    result["network_protocols"] = rf_utils.get_network_protocols()
-                elif command == "GetHealthReport":
-                    result["health_report"] = rf_utils.get_multi_manager_health_report()
-                elif command == "GetHostInterfaces":
-                    result["host_interfaces"] = rf_utils.get_hostinterfaces()
-                elif command == "GetManagerInventory":
-                    result["manager"] = rf_utils.get_multi_manager_inventory()
 
     # Return data back
     module.exit_json(redfish_facts=result)

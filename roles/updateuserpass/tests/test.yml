@@ -3,7 +3,7 @@
   connection: local
   gather_facts: False
   vars:
-   - account_username: test_mod
+   - account_username: test
    - new_pass: Password@_
   roles:
     - updateuserpass

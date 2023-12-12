@@ -3,9 +3,9 @@
   connection: local
   gather_facts: False
   vars:
-    - storage_id: "0"
-    - logical_id: "0"
-    - write_policy: "Write Through"
+    - storage_id: RAIDStorage0
+    - logical_id: LogicalDrive1
+    - write_policy: "Write Back"
     - read_policy: "Read Ahead"
 
   roles:

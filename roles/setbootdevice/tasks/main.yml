@@ -1,10 +1,12 @@
 ---
 # tasks file for setbootdevice
-- name: Set boot device to {{ bootdevice }}
+- name: Set boot options
   hdm_redfish_command:
     category: Systems
     command: SetBootDevice
-    bootdevice: "{{ bootdevice }}"
+    boot_target: "{{ boot_target }}"
+    boot_enable: "{{ boot_enable }}"
+    boot_mode: "{{ boot_mode }}"
     baseuri: "{{ baseuri }}"
     username: "{{ username }}"
     password: "{{ password }}"

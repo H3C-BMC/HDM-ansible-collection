@@ -1,0 +1,10 @@
+---
+# tasks file for get raid storage details
+- name: Get Raid Storage Inventory
+  hdm_redfish_info:
+    category: Systems
+    command: GetRaidStorageInventory
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+  register: result_attr

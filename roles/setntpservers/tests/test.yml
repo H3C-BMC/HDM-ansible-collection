@@ -3,7 +3,7 @@
   connection: local
   gather_facts: False
   vars:
-    - attribute_name: TertiaryNtpServer 
-    - attribute_value: 192.168.11.22
+    - attribute_name: RefreshInterval
+    - attribute_value: 7200
   roles:
     - setntpservers
