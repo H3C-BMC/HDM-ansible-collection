@@ -8,7 +8,7 @@
         "Name": "test",
         "InitState": "No",
         "StripSize": "64KB",
-        "Level": "RAID 0",
+        "Level": "RAID0",
         "SpanNum": 1,
         "NumDrives": 2,
         "ReadPolicy": "Read Ahead",

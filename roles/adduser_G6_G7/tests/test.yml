@@ -1,0 +1,16 @@
+---
+- hosts: hdmhosts
+  connection: local
+  gather_facts: False
+  vars:
+    - new_pass: Password@_
+    - new_user: test
+    - role_id: Operator
+    - snmp_v3_enable:
+    - snmp_v3_access_permission:
+    - snmp_v3_auth_protocol:
+    - snmp_v3_priv_protocol:
+    - snmp_v3_password:
+
+  roles:
+    - adduser_G6_G7

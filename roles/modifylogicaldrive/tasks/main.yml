@@ -11,3 +11,7 @@
     logical_id: "{{ logical_id }}"
     write_policy: "{{ write_policy }}"
     read_policy: "{{ read_policy }}"
+    default_read_policy: "{{ default_read_policy }}"
+    default_write_policy: "{{ default_write_policy }}"
+    access_policy: "{{access_policy}}"
+    drive_cache: "{{drive_cache}}"

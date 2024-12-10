@@ -30,7 +30,7 @@ CATEGORY_COMMANDS_ALL = {
                 "PowerGracefulShutdown", "PowerReboot", "CreateLogicalDrive",
                 "DeleteLogicalDrive", "ModifyLogicalDrive"],
     "Chassis": ["IndicatorLedOn"],
-    "Accounts": ["AddUser", "DeleteUser",
+    "Accounts": ["AddUser", "AddUser_G6_G7", "DeleteUser",
                  "UpdateUserRole", "UpdateUserPassword", "UpdateUserName"],
     "Sessions": ["ClearSessions", "CreateSession", "DeleteSession"],
     "Manager": ["SetNTPServers", "SetTimeZone", "SetIPv4Static", "SetIPv4DHCP",
@@ -55,12 +55,12 @@ def main():
             roleid=dict(aliases=["account_roleid"]),
             update_username=dict(type='str', aliases=["account_updatename"]),
             timeout=dict(type='int', default=60),
-
+            # BEGIN: Added by t18444, 2023-01-04, PN: 202301040657,
             # Des: Modify parameter name
             boot_enable=dict(),
             boot_mode=dict(),
             boot_target=dict(),
-
+            # END: Added by t18444, 2023-01-04, PN: 202301040657,
             # Des: Modify parameter name
             resource_id=dict(),
             attribute_name=dict(),
@@ -77,13 +77,27 @@ def main():
             logical_id=dict(),
             write_policy=dict(),
             read_policy=dict(),
-
-            # Des: G6
+			# BEGIN: Added by dys46944, 2023-11-03, PN: NV202311031274,
+            # Des: ﾊﾊﾅ腮6
             access_policy=dict(),
-            drive_cache=dict()
-
-            # Des: G6 
-
+            drive_cache=dict(),
+			# END: Added by dys46944, 2023-11-03, PN: NV202311031274,
+            # Des: ﾊﾊﾅ腮6
+            # BEGIN: Added by dys46944, 2024-10-14, PN: 202410140627,
+            # Des:ﾊﾊﾅ腮7
+            default_write_policy=dict(),
+            default_read_policy=dict(),
+            # END: Added by dys46944, 2024-10-14, PN: 202410140627,
+            # Des: ﾊﾊﾅ腮7
+            # BEGIN: Added by dys46944, 2023-11-23, PN: NV202311221934,
+            # Des:G6ｻ昻ﾍﾐﾂﾔﾃｻｧ
+            snmp_v3_enable = dict(),
+            snmp_v3_access_permission = dict(),
+            snmp_v3_auth_protocol = dict(),
+            snmp_v3_priv_protocol = dict(),
+            snmp_v3_password = dict(no_log=True)
+            # END: Added by dys46944, 2023-11-23, PN: NV202311221934,
+            # Des:G6ｻ昻ﾍﾐﾂﾔﾃｻｧ
         ),
         required_together=[
             ('username', 'password'),
@@ -112,7 +126,16 @@ def main():
         'account_username': module.params['new_username'],
         'account_password': module.params['new_password'],
         'account_roleid': module.params['roleid'],
-        'account_updatename': module.params['update_username']
+        'account_updatename': module.params['update_username'],
+        # BEGIN: Added by dys46944, 2023-11-23, PN: NV202311221934,
+        # Des:G6ｻ昻ﾍﾐﾂﾔﾃｻｧ
+        'snmp_v3_enable': module.params['snmp_v3_enable'],
+        'snmp_v3_access_permission': module.params['snmp_v3_access_permission'],
+        'snmp_v3_auth_protocol': module.params['snmp_v3_auth_protocol'],
+        'snmp_v3_priv_protocol': module.params['snmp_v3_priv_protocol'],
+        'snmp_v3_password': module.params['snmp_v3_password']
+        # END: Added by dys46944, 2023-11-23, PN: NV202311221934,
+        # Des:G6ｻ昻ﾍﾐﾂﾔﾃｻｧ
     }
 
     # timeout
@@ -158,12 +181,18 @@ def main():
         "logical_id": module.params['logical_id'],
         "write_policy": module.params['write_policy'],
         "read_policy": module.params['read_policy'],
-
-        # Des: G6
+		# BEGIN: Added by dys46944, 2023-11-03, PN: NV202311031274,
+        # Des: ﾊﾊﾅ腮6
         "access_policy": module.params['access_policy'],
         "drive_cache": module.params['drive_cache'],
-
-        # Des: G6
+		# END: Added by dys46944, 2023-11-03, PN: NV202311031274,
+        # Des: ﾊﾊﾅ腮6
+        # BEGIN: Added by dys46944, 2024-10-14, PN: 202410140627,
+        # Des:ﾊﾊﾅ腮7
+        "default_write_policy": module.params['default_write_policy'],
+        "default_read_policy": module.params['default_read_policy'],
+        # END: Added by dys46944, 2024-10-14, PN: 202410140627,
+        # Des: ﾊﾊﾅ腮7
     }
 
     # Build root URI
@@ -192,6 +221,11 @@ def main():
     if category == "Accounts":
         ACCOUNTS_COMMANDS = {
             "AddUser": rf_utils.add_user,
+            # BEGIN: Added by dys46944, 2023-11-23, PN: NV202311221934,
+            # Des:G6ｻ昻ﾍﾐﾂﾔﾃｻｧ
+            "AddUser_G6_G7": rf_utils.add_user_G6_G7,
+            # BEGIN: Added by dys46944, 2023-11-23, PN: NV202311221934,
+            # Des:G6ｻ昻ﾍﾐﾂﾔﾃｻｧ
             "DeleteUser": rf_utils.delete_user,
             "UpdateUserRole": rf_utils.update_user_role,
             "UpdateUserPassword": rf_utils.update_user_password,
@@ -221,10 +255,10 @@ def main():
                 boot_opts['boot_enable'] = 'Once'
                 result = rf_utils.set_boot_override(boot_opts)
             elif command == "SetBootDevice":
-
+                # BEGIN: Added by t18444, 2023-01-31, PN: 202301300726,
                 # Des: unforced assignment
                 result = rf_utils.set_boot_override(boot_opts)
-
+                # END: Added by t18444, 2023-01-31, PN: 202301300726,
                 # Des: unforced assignment
             elif command == "CreateLogicalDrive":
                 result = rf_utils.create_logical_driver(raid_detail)

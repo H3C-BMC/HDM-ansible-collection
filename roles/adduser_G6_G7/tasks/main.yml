@@ -1,0 +1,17 @@
+---
+# tasks file for adduser_G6_G7
+- name: Add user
+  hdm_redfish_command:
+    category: Accounts
+    command: AddUser_G6_G7
+    baseuri: "{{ baseuri }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    new_username: "{{ new_user }}"
+    new_password: "{{ new_pass }}"
+    roleid: "{{ role_id }}"
+    snmp_v3_enable: "{{ snmp_v3_enable }}"
+    snmp_v3_access_permission: "{{ snmp_v3_access_permission }}"
+    snmp_v3_auth_protocol: "{{ snmp_v3_auth_protocol }}"
+    snmp_v3_priv_protocol: "{{ snmp_v3_priv_protocol }}"
+    snmp_v3_password: "{{ snmp_v3_password }}"

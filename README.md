@@ -2,12 +2,12 @@
 
 # Introduction
 
-Ansible playbooks and roles for H3C server HDM or HDM2 using Redfish APIs.
+Ansible playbooks and roles for H3C server HDM HDM2 and HDM3 using Redfish APIs.
 
 This repository can be integrated into complex playbooks for you own needs and the examples suggest how to create your own playbooks. 
 
 # Prerequisites
-*	HDM or HDM2 or later. Some commands might require specific HDM or HDM2 versions using redfish api. For more information, see the HDM or HDM2 redfish documents.
+*	HDM or HDM2 or HDM3 or later. Some commands might require specific HDM or HDM2 or HDM3 versions using redfish api. For more information, see the HDM or HDM2 or HDM3 redfish documents.
 *	ansible >= 2.9
 *	python 2 and 3 up to version 3.10
 

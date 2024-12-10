@@ -573,6 +573,73 @@ class HDMRedfishUtils(object):
             return response
         return {'ret': True}
 
+    # BEGIN: Added by dys46944, 2023-11-23, PN: NV202311221934,
+    # Des:G6机型新增用户
+    def add_user_G6_G7(self, user):
+        """
+        Add user
+        :param user: new user profile
+        :return: dict
+        """
+        if not user.get('account_username'):
+            return {'ret': False, 'msg':
+                'Must provide account_username for AddUser command'}
+
+        response = self._find_account_uri(
+            username=user.get('account_username'))
+        if response['ret']:
+            # account_username already exists, nothing to do
+            return {'ret': True, 'changed': False}
+
+        response = self.get_request(self.root_uri + self.accounts_uri)
+        if not response['ret']:
+            return response
+
+        payload = {}
+        if user.get('account_username'):
+            payload['UserName'] = user.get('account_username')
+        if user.get('account_password'):
+            payload['Password'] = user.get('account_password')
+        if user.get('account_roleid'):
+            payload['RoleId'] = user.get('account_roleid')
+        if user.get('account_id'):
+            payload['Id'] = user.get('account_id')
+        payload['Locked'] = False
+        payload['Enabled'] = True
+        oem = {}
+        oem["Public"] = dict()
+        oem['Public']['IPMIEnable'] = True
+        oem['Public']['WebEnable'] = True
+        oem["Public"]["RSAEncryptionEnabled"] = True
+        if user.get('snmp_v3_enable'):
+            oem['Public']['SnmpV3Enable'] = user.get('snmp_v3_enable')
+        else:
+            oem['Public']['SnmpV3Enable'] = False
+        if user.get('snmp_v3_access_permission'):
+            oem['Public']['SnmpV3AccessPermission'] = user.get('snmp_v3_access_permission')
+        else:
+            oem['Public']['SnmpV3AccessPermission'] = "read_only"
+        if user.get('snmp_v3_auth_protocol'):
+            oem['Public']['SnmpV3AuthProtocol'] = user.get('snmp_v3_auth_protocol')
+        else:
+            oem['Public']['SnmpV3AuthProtocol'] = "sha"
+        if user.get('snmp_v3_priv_protocol'):
+            oem['Public']['SnmpV3PrivProtocol'] = user.get('snmp_v3_priv_protocol')
+        else:
+            oem['Public']['SnmpV3PrivProtocol'] = "des"
+        if user.get('snmp_v3_password'):
+            oem['Public']['SnmpV3Password'] = user.get('snmp_v3_password')
+        else:
+            oem['Public']['SnmpV3Password'] = ""
+        payload['Oem'] = oem
+        response = self.post_request(
+            self.root_uri + self.accounts_uri, payload)
+        if not response['ret']:
+            return response
+        return {'ret': True}
+    # END: Added by dys46944, 2023-11-23, PN: NV202311221934,
+    # Des:G6机型新增用户
+
     def list_users(self):
         result = {}
         user_list = []
@@ -721,6 +788,11 @@ class HDMRedfishUtils(object):
             return {'ret': True, 'changed': False}
         payload = self._construct_account_request_body(data)
         payload['RoleId'] = user.get('account_roleid')
+        # BEGIN: Added by dys46944, 2023-11-23, PN: NV202311221934,
+        # Des: 适配G6
+        del payload['Password']
+        # END: Added by dys46944, 2023-11-23, PN: NV202311221934,
+        # Des: 适配G6
         response = self.patch_request(self.root_uri + uri, payload)
         if response['ret'] is False:
             return response
@@ -766,15 +838,19 @@ class HDMRedfishUtils(object):
             return response
         uri = response['uri']
         data = response['data']
+        # BEGIN: Added by t18444, 2023-01-04, PN: 202301040680,
         # Des: Nothing to do
         if data.get('UserName') == user.get('account_updatename'):
             return {'ret': True, 'changed': False}
+        # END: Added by t18444, 2023-01-04, PN: 202301040680,
         # Des: Nothing to do
         payload = self._construct_account_request_body(data)
         payload['UserName'] = user.get('account_updatename')
-        # Des: G6
+        # BEGIN: Added by dys46944, 2023-11-07, PN: NV202311070547,
+        # Des: 适配G6
         del payload['Password']
-        # Des: G6
+        # END: Added by dys46944, 2023-11-07, PN: NV202311070547,
+        # Des: 适配G6
         response = self.patch_request(self.root_uri + uri, payload)
         if response['ret'] is False:
             return response
@@ -789,6 +865,7 @@ class HDMRedfishUtils(object):
         payload = {}
         attr_name = mgr_attributes["mgr_attr_name"]
         attr_value = mgr_attributes["mgr_attr_value"]
+        # BEGIN: Added by t18444, 2023-01-04, PN: 202301040701,
         # Des: Add parameter value selection range limit
         if attr_name == "ServiceEnabled":
             if attr_value not in ['True', 'False']:
@@ -796,6 +873,7 @@ class HDMRedfishUtils(object):
                         'Must choose True or False'}
             attr_value = True if attr_value == 'True' else False
             payload["ServiceEnabled"] = attr_value
+        # END: Added by t18444, 2023-01-04, PN: 202301040701,
         # Des: Add parameter value selection range limit
         elif attr_name == "PreferredNtpServer":
             payload["PreferredNtpServer"] = attr_value
@@ -882,11 +960,13 @@ class HDMRedfishUtils(object):
             # If already set to requested value, remove it from PATCH payload
             if data[u'Attributes'][attr_name] == attributes[attr_name]:
                 del attrs_to_patch[attr_name]
+        # BEGIN: Added by t18444, 2023-01-04, PN: 202301040735,
         # Des: The configuration item does not exist and returns directly
         warning = ""
         if attrs_bad:
             warning = "Incorrect attributes %s" % attrs_bad
             return {'ret': False, 'msg': warning}
+        # END: Added by t18444, 2023-01-04, PN: 202301040735,
         # Des: The configuration item does not exist and returns directly
         # Return success w/ changed=False if no attrs need to be changed
         if not attrs_to_patch:
@@ -935,6 +1015,7 @@ class HDMRedfishUtils(object):
 
         req_dict = {}
 
+        # BEGIN: Added by t18444, 2023-01-31, PN: 202301300710,
         # Des: When the parameter value is not specified,
         # it needs to be filled according to the current value
         # Determine whether the boot device is legal
@@ -992,6 +1073,7 @@ class HDMRedfishUtils(object):
         else:
             req_dict["BootSourceOverrideMode"] = boot.get(
                 "BootSourceOverrideMode")
+        # END: Added by t18444, 2023-01-31, PN: 202301300710,
         # Des: When the parameter value is not specified,
         # it needs to be filled according to the current value
 
@@ -1235,9 +1317,11 @@ class HDMRedfishUtils(object):
             return {'ret': False, 'msg':
                     'Must provide storage_id for CreateLogicalDrive command'}
         # storage resource uri
+        # BEGIN: Added by t18444, 2023-01-04, PN: 202301040719,
         # Des: Modify the uri composition
         resource_uri = ("/redfish/v1/Systems/1/Storages/%s" %
                         details.get('storage_id'))
+        # END: Added by t18444, 2023-01-04, PN: 202301040719,
         # Des: Modify the uri composition
         # Get current control card information
         response = self.get_request(self.root_uri + resource_uri)
@@ -1280,9 +1364,11 @@ class HDMRedfishUtils(object):
         if not details.get('logical_id'):
             return {'ret': False, 'msg':
                     'Must provide logical_id for DeleteLogicalDrive command'}
+        # BEGIN: Added by t18444, 2023-01-04, PN: 202301040719,
         # Des: Modify the uri composition
         resource_uri = ("/redfish/v1/Systems/1/Storages/%s/Volumes/%s" %
                         (details['storage_id'], details['logical_id']))
+        # END: Added by t18444, 2023-01-04, PN: 202301040719,
         # Des: Modify the uri composition
         # Get the current specified logical disk configuration
         response = self.get_request(self.root_uri + resource_uri)
@@ -1306,70 +1392,48 @@ class HDMRedfishUtils(object):
         if not details.get('logical_id'):
             return {'ret': False, 'msg':
                     'Must provide logical_id for ModifyLogicalDrive command'}
+        # BEGIN: Added by t18444, 2023-01-04, PN: 202301040719,
         # Des: Modify the uri composition
         resource_uri = ("/redfish/v1/Systems/1/Storages/%s/Volumes/%s" %
                         (details['storage_id'], details['logical_id']))
+        # END: Added by t18444, 2023-01-04, PN: 202301040719,
         # Des: Modify the uri composition
         # Get the current specified logical disk configuration
         response = self.get_request(self.root_uri + resource_uri)
         if response['ret'] is False:
             return response
-        # Des: G6
+		# BEGIN: Added by dys46944, 2023-11-13, PN: NV202311031274,
+        # Des: 适配G6
         tmp = {}
         if details.get("write_policy") is not None:
             tmp["WritePolicy"] = details.get("write_policy")
-            '''
-            payload = {
-                "Oem": {
-                    "Public":
-                        {
-                            "WritePolicy": details.get("write_policy")
-                        }
-                }
-            }
-            '''
+
         if details.get("read_policy") is not None:
             tmp["ReadPolicy"] = details.get("read_policy")
-            '''
-            payload = {
-                "Oem": {
-                    "Public":
-                        {
-                            "ReadPolicy": details.get("read_policy")
-                        }
-                }
-            }
-            '''
+
         if details.get("access_policy") is not None:
             tmp["AccessPolicy"] = details.get("access_policy")
-            '''
-            payload = {
-                "Oem": {
-                    "Public":
-                        {
-                            "AccessPolicy": details.get("access_policy")
-                        }
-                }
-            }
-            '''
+
         if details.get("drive_cache") is not None:
             tmp["DriveCache"] = details.get("drive_cache")
-            '''
-            payload = {
-                "Oem": {
-                    "Public":
-                        {
-                            "DriveCache": details.get("drive_cache")
-                        }
-                }
-            }
-            '''
+
+        # BEGIN: Added by dys46944, 2024-10-14, PN: 202410140627,
+        # Des:适配G7
+        if details.get("default_write_policy") is not None:
+            tmp["DefaultWritePolicy"] = details.get("default_write_policy")
+
+        if details.get("default_read_policy") is not None:
+            tmp["DefaultReadPolicy"] = details.get("default_read_policy")
+        # END: Added by dys46944, 2024-10-14, PN: 202410140627,
+        # Des: 适配G7
+
         payload = {
             "Oem": {
                 "Public": tmp
             }
         }
-        # Des: G6
+		# END: Added by dys46944, 2023-11-13, PN: NV202311031274,
+        # Des: 适配G6
         response = self.patch_request(self.root_uri + resource_uri, payload)
         if response['ret'] is False:
             return response

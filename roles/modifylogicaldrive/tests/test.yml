@@ -7,6 +7,10 @@
     - logical_id: LogicalDrive1
     - write_policy: "Write Back"
     - read_policy: "Read Ahead"
+    - default_write_policy: "Write Through"
+    - default_read_policy: "Read Ahead"
+    - access_policy: "Read/Write"
+    - drive_cache: "Enable"
 
   roles:
     - modifylogicaldrive
