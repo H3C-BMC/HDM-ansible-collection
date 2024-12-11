@@ -1,5 +1,5 @@
 ---
-# tasks file for adduser_G6_G7
+# tasks file for adduserg6g7
 - name: Add user
   hdm_redfish_command:
     category: Accounts

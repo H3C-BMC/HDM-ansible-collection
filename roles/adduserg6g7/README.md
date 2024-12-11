@@ -1,6 +1,7 @@
-adduser_G6_G7
+adduserg6g7
 =========
-add hdm accout
+
+add hdm accout for g6 g7
 
 Example Playbook
 ----------------
@@ -9,13 +10,15 @@ Example Playbook
   connection: local
   gather_facts: False
   vars:
-	- new_pass: Password@_ 
-	- new_user: test12  
-	- role_id: Operator
-	- timeout: 30
-
+  
+  - new_pass: Password@_ 
+  - new_user: test12  
+  - role_id: Operator
+  - timeout: 30
+  
   roles:
-	- adduser_G6_G7
+  
+  - adduserg6g7
 
 License
 -------
@@ -26,4 +29,3 @@ Author Information
 ------------------
 
 - H3C-BMC
-

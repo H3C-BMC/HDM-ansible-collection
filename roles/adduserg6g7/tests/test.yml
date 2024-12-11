@@ -13,4 +13,4 @@
     - snmp_v3_password:
 
   roles:
-    - adduser_G6_G7
+    - adduserg6g7
